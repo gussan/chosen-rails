@@ -12,6 +12,14 @@ Include `chosen-rails` in Gemefile
 
     gem 'chosen-rails'
 
+For Rails 4 project, it is required to add [compass-rails](https://github.com/Compass/compass-rails) gem explicitly and use unofficial branch for [compatible issue](https://github.com/Compass/compass-rails/pull/59).
+
+
+```ruby
+# gem 'compass-rails', github: 'Compass/compass-rails', branch: 'rails4'
+gem 'compass-rails', github: 'milgner/compass-rails', branch: 'rails4'
+```
+
 Then run `bundle install`
 
 ### Include chosen javascript assets
@@ -36,10 +44,12 @@ Add to one coffee script file, like `scaffold.js.coffee`
 
     $ ->
       # enable chosen js
-      $('.chzn-select').chosen
+      $('.chosen-select').chosen
         allow_single_deselect: true
         no_results_text: 'No results matched'
+        width: '200px'
 
+Notice: `width` option is required since `Chosen 0.9.15`.
 
 And this file must be included in `application.js`
 
@@ -48,11 +58,23 @@ And this file must be included in `application.js`
 
 Also add the class to your form field
 
-    <%= f.select :author, User.all.map { |u| [u.name, u.id] }, { include_blank: true }, { class: 'chzn-select' } %>
+    <%= f.select :author,
+      User.all.map { |u| [u.name, u.id] },
+      { include_blank: true },
+      { class: 'chosen-select' }
+    %>
 
 If you use simple form as form builder
 
-    <%= f.association :author, collection: User.all, include_blank: true, input_html: { class: 'chzn-select' } %>
+    <%= f.association :author,
+      collection: User.all,
+      include_blank: true,
+      input_html: { class: 'chosen-select' }
+    %>
+
+### Deployment
+
+Since version 0.13.0, non-digested assets of `chosen-rails` will simply be copied from digested assets.
 
 ## Gem maintenance
 

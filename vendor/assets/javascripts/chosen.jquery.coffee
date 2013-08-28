@@ -59,7 +59,7 @@ class Chosen extends AbstractChosen
     else
       @search_container = @container.find('div.chosen-search').first()
       @selected_item = @container.find('.chosen-single').first()
-    
+
     this.results_build()
     this.set_tab_index()
     this.set_label_behavior()
@@ -75,10 +75,6 @@ class Chosen extends AbstractChosen
     @search_results.bind 'mouseover.chosen', (evt) => this.search_results_mouseover(evt); return
     @search_results.bind 'mouseout.chosen', (evt) => this.search_results_mouseout(evt); return
     @search_results.bind 'mousewheel.chosen DOMMouseScroll.chosen', (evt) => this.search_results_mousewheel(evt); return
-
-    @search_results.bind 'touchstart.chosen', (evt) => this.search_results_touchstart(evt); return
-    @search_results.bind 'touchmove.chosen', (evt) => this.search_results_touchmove(evt); return
-    @search_results.bind 'touchend.chosen', (evt) => this.search_results_touchend(evt); return
 
     @form_field_jq.bind "chosen:updated.chosen", (evt) => this.results_update_field(evt); return
     @form_field_jq.bind "chosen:activate.chosen", (evt) => this.activate_field(evt); return
@@ -283,7 +279,8 @@ class Chosen extends AbstractChosen
     this.result_clear_highlight() if $(evt.target).hasClass "active-result" or $(evt.target).parents('.active-result').first()
 
   choice_build: (item) ->
-    choice = $('<li />', { class: "search-choice" }).html("<span>#{item.html}</span>")
+    html = @useTemplate item
+    choice = $('<li />', { class: "search-choice" }).html("<span>#{html}</span>")
 
     if item.disabled
       choice.addClass 'search-choice-disabled'
@@ -291,7 +288,7 @@ class Chosen extends AbstractChosen
       close_link = $('<a />', { class: 'search-choice-close', 'data-option-array-index': item.array_index })
       close_link.bind 'click.chosen', (evt) => this.choice_destroy_link_click(evt)
       choice.append close_link
-    
+
     @search_container.before  choice
 
   choice_destroy_link_click: (evt) ->
@@ -353,7 +350,6 @@ class Chosen extends AbstractChosen
       if @is_multiple
         this.choice_build item
       else
-        this.single_set_selected_text(item.text)
 
       this.results_hide() unless (evt.metaKey or evt.ctrlKey) and @is_multiple
 
@@ -364,6 +360,8 @@ class Chosen extends AbstractChosen
       this.search_field_scale()
 
   single_set_selected_text: (text=@default_text) ->
+     html = @useTemplate item
+     @selected_item.find("span").first().html html
     if text is @default_text
       @selected_item.addClass("chosen-default")
     else

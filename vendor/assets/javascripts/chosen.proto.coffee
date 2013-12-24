@@ -67,6 +67,7 @@ class @Chosen extends AbstractChosen
     @form_field.observe "chosen:updated", (evt) => this.results_update_field(evt)
     @form_field.observe "chosen:activate", (evt) => this.activate_field(evt)
     @form_field.observe "chosen:open", (evt) => this.container_mousedown(evt)
+    @form_field.observe "chosen:close", (evt) => this.input_blur(evt)
 
     @search_field.observe "blur", (evt) => this.input_blur(evt)
     @search_field.observe "keyup", (evt) => this.keyup_checker(evt)
@@ -92,7 +93,7 @@ class @Chosen extends AbstractChosen
       @container.select(".search-choice-close").each (choice) ->
         choice.stopObserving()
     else
-      @selected_item.stopObserving() 
+      @selected_item.stopObserving()
 
     if @search_field.tabIndex
       @form_field.tabIndex = @search_field.tabIndex
@@ -304,8 +305,8 @@ class @Chosen extends AbstractChosen
       this.search_field_scale()
 
   results_reset: ->
+    this.reset_single_select_options()
     @form_field.options[0].selected = true
-    @selected_option_count = null
     this.single_set_selected_text()
     this.show_search_field_default()
     this.results_reset_cleanup()
@@ -329,13 +330,8 @@ class @Chosen extends AbstractChosen
       if @is_multiple
         high.removeClassName("active-result")
       else
-        if @result_single_selected
-          @result_single_selected.removeClassName("result-selected")
-          selected_index = @result_single_selected.getAttribute('data-option-array-index')
-          @results_data[selected_index].selected = false
+        this.reset_single_select_options()
 
-        @result_single_selected = high
-      
       high.addClassName("result-selected")
 
       item = @results_data[ high.getAttribute("data-option-array-index") ]
